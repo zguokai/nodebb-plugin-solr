@@ -163,7 +163,8 @@ Solr.search = function(data, callback) {
 	}
 	var isTopic = data.index === 'topic',
 		field = isTopic ? 'tid_i' : 'pid_i',
-		term = utils.addFiltersToTerm(data.content, data);
+		term = utils.addFiltersToTerm(data.query, data);
+		// term = utils.addFiltersToTerm(data.content, data);
 
 	// Determine which cache to use
 	var cache = isTopic ? titleCache : postCache;
@@ -530,8 +531,8 @@ Solr.rebuildIndex = function(req, res) {
 				next();
 			});
 		},
-		topics: async.apply(Solr.rebuildTopicIndex),
-		users: async.apply(Solr.rebuildUserIndex)
+		topics: async.apply(Solr.rebuildTopicIndex)
+		// users: async.apply(Solr.rebuildUserIndex)
 	}, function(err, results) {
 		var payload = results.topics.concat(results.users);
 
@@ -595,7 +596,7 @@ Solr.rebuildUserIndex = function(callback) {
 	async.waterfall([
 		async.apply(db.getSortedSetRange, 'users:joindate', 0, -1),
 		function(uids, next) {
-			user.getUsersFields(uids, ['uid', 'username', 'userslug', 'deleted'] , next);
+			user.getUserFields(uids, ['uid', 'username', 'userslug', 'deleted'] , next);
 		}
 	], function(err, users) {
 		// Filter out deleted users
