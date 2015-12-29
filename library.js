@@ -534,7 +534,8 @@ Solr.rebuildIndex = function(req, res) {
 		topics: async.apply(Solr.rebuildTopicIndex)
 		// users: async.apply(Solr.rebuildUserIndex)
 	}, function(err, results) {
-		var payload = results.topics.concat(results.users);
+		//var payload = results.topics.concat(results.users);
+		var payload = results.topics;
 
 		Solr.add(payload, function(err) {
 			if (!err) {
